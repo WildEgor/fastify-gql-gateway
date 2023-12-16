@@ -1,0 +1,23 @@
+version: '3.8'
+
+volumes:
+    fgg_node_modules:
+
+services:
+  fastify-gql-gateway:
+    container_name: fastify-gql-gateway
+    restart: always
+    build:
+      context: .
+      target: dev
+      dockerfile: Dockerfile
+    command: yarn start:debug
+    ports:
+      - 9229:9229
+      - 9051:9051
+    env_file:
+      - .env
+      - .env.local
+    volumes:
+      - .:/srv/app
+      - fgg_node_modules:/srv/app/node_modules/

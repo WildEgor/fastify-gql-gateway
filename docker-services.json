@@ -1,0 +1,7 @@
+[
+  {
+    "name": "SpaceX API",
+    "url": "https://spacex-production.up.railway.app/",
+    "enabled": true
+  }
+]
