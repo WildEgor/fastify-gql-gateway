@@ -5,9 +5,13 @@ ENV NODE_ENV development
 
 WORKDIR /srv/deps
 
+COPY ./tsconfig*.json ./
+COPY ./nest-cli.json ./
+COPY ./.prettierrc ./
+COPY ./.eslint* ./
+COPY ./jest.config.json ./
 COPY package.json ./
-COPY yarn.lock ./
-COPY tsconfig*.json ./
+COPY yarn.lock .
 
 RUN yarn global add @nestjs/cli
 RUN yarn install --frozen-lockfile
@@ -20,17 +24,11 @@ ENV NODE_ENV production
 WORKDIR /srv/build
 
 COPY ./src ./src
-COPY ./tsconfig*.json ./
-COPY ./nest-cli.json ./
-COPY ./.prettierrc ./
-COPY ./.eslintignore ./
-COPY ./.eslintrc.js ./
-COPY ./jest.config.json ./
-
-COPY --from=deps /srv/deps/node_modules ./node_modules
+COPY ./docker-services.json ./services.json
+COPY ./.env.local ./.env.local
+COPY --from=deps /srv/deps ./
 
 RUN yarn build
-RUN yarn install --production && yarn cache clean
 
 # ------------ STAGE: Execute app
 FROM node:20.10-alpine3.18 as execute
@@ -39,16 +37,9 @@ ENV NODE_ENV production
 
 WORKDIR /srv/app
 
-COPY --from=build --chown=node:node /srv/build/start.sh ./start.sh
-COPY --from=build --chown=node:node /srv/build/node_modules ./node_modules
-COPY --from=build --chown=node:node /srv/build/dist ./dist
-COPY --from=build --chown=node:node /srv/build/docker-services.json ./services.json
-COPY --from=build --chown=node:node /srv/build/.env.local ./.env.local
+COPY --from=build --chown=node:node /srv/build ./
 
 EXPOSE 9051
-
-RUN chmod ugo+rwx /srv/app/start.sh
-RUN apk update && apk upgrade && apk add --no-cache bash git openssh curl
 
 CMD ["node", "dist/main.js"]
 
