@@ -76,14 +76,10 @@ const bootstrap = async function bootstrap(): Promise<void> {
     }
 
     await app.listen(appConfig.port, '0.0.0.0', () => {
-      const addr
-        = process.platform === 'win32'
-          ? `http://localhost:${appConfig.port}`
-          : `http://127.0.0.1:${appConfig.port}`;
-      logger.debug(`Service available on ${addr}`);
-      logger.debug(`Swagger available at ${addr}/swagger`);
-      logger.debug(`GraphQL available at ${addr}/graphql`);
-      logger.debug(`GraphQL UI available att ${addr}/altair`);
+      logger.debug(`Service available on ${appConfig.baseUrl}`);
+      logger.debug(`Swagger available at ${appConfig.baseUrl}/swagger`);
+      logger.debug(`GraphQL available at ${appConfig.baseUrl}/graphql`);
+      logger.debug(`GraphQL UI available att ${appConfig.baseUrl}/altair`);
     });
   }
   catch (e) {

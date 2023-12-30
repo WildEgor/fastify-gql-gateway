@@ -15,4 +15,10 @@ export class AppConfig implements IAppConfig {
     this.isProduction = configService.getBoolean('APP_PRODUCTION');
   }
 
+  public get baseUrl(): string {
+    return process.platform === 'win32'
+      ? `http://localhost:${this.port}`
+      : `http://127.0.0.1:${this.port}`;
+  }
+
 }
